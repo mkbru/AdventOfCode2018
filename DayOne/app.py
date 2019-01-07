@@ -5,53 +5,56 @@ frequency = 0
 end = None
 dupes = {}
 foundDupe = None
-fileIterations = 0
 
-def computeFrequencies():
+def readFile():
+    fileContents = []
+    f=open("frequencies.txt","r")
+
+    if f.mode == "r":
+            contents = f.read().splitlines()
+            for line in contents:
+                fileContents.append(line)
+    f.close()
+    return fileContents
+
+def partOne(fileContents):
+    frequency = 0
+
+    for val in fileContents:
+        frequency += int(val)
+
+    print("Part One: " + str(frequency))
+
+def partTwo(fileContents):
+    global fileIterations
+
+    while foundDupe != True:
+            findDuplicateFrequency()
+
+def findDuplicateFrequency():
     global frequency
     global foundDupe
 
     f=open("frequencies.txt","r")
-    f2=open("copiedFrequencies.txt","a")
 
     if f.mode == "r":
         contents = f.read().splitlines()
-        
         for line in contents:
+                frequency += int(line)
 
-            if line[0] == '+':
-                frequency += int(line[1:end])
-            else:
-                frequency -= int(line[1:end])
-
-            print >>f2,frequency
-
-            if frequency in dupes:
-                print("***Part Two***")
-                print("First frequency the device reaches twice: " + str(frequency))
-                foundDupe = True
-                break
-            else:
-                dupes[frequency] = frequency
-
+                if frequency in dupes:
+                    print("Part Two: " + str(frequency))
+                    foundDupe = True
+                    break
+                else:
+                    dupes[frequency] = frequency
     f.close()
-    f2.close()
 
-def iterateFile():
-    global fileIterations
+def main():
+    fileContents = readFile()
+    partOne(fileContents)
+    partTwo(fileContents)
 
-    while foundDupe != True:
-        computeFrequencies()
-        fileIterations += 1
+main()
 
-        if fileIterations == 1:
-            print("***Part One***")
-            print("Resulting frequency after all the changes have been applied: " + str(frequency))
 
-iterateFile()
-
-def dayOne():
-    if os.path.exists("copiedFrequencies.txt"):
-        os.remove("copiedFrequencies.txt")
-    else:
-        print("The file does not exist")
